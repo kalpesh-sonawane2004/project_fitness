@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMI Fitness Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+    <style>
+        /* Background animation - smooth gradient shift */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(270deg, #a8dadc, #ffffff);
+            background-size: 400% 400%;
+            animation: gradientAnimation 10s ease infinite;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Creating a moving wave effect at the bottom of the screen */
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.5);
+            background-image: url('https://www.transparenttextures.com/patterns/diamond.png');
+            animation: waveAnimation 3s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes waveAnimation {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Fitness-related icons floating in the background */
+        .fitness-icon {
+            position: absolute;
+            font-size: 40px;
+            color: #457b9d;
+            animation: moveIcon 15s linear infinite;
+        }
+
+        /* Animating fitness-related icons */
+        @keyframes moveIcon {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+
+            50% {
+                transform: translateX(100vw) translateY(50vh);
+            }
+
+            100% {
+                transform: translateX(-100vw) translateY(0);
+            }
+        }
+
+        /* Creating unique animations for different icons */
+        .icon-dumbbell {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .icon-running {
+            top: 30%;
+            left: 20%;
+            animation-delay: 3s;
+        }
+
+        .icon-heartbeat {
+            top: 50%;
+            left: 30%;
+            animation-delay: 5s;
+        }
+
+        .icon-dumbbell-two {
+            top: 70%;
+            left: 80%;
+            animation-delay: 7s;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+            max-width: 450px;
+            text-align: center;
+            animation: fadeInUp 1s ease-in-out;
+            z-index: 10;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #1d3557;
+        }
+
+        .btn-custom {
+            background: #a8dadc;
+            border: none;
+            padding: 14px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            border-radius: 15px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn-custom:hover {
+            background: #457b9d;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .btn-custom:active {
+            transform: scale(0.98);
+        }
+
+        .input-field {
+            transition: 0.3s;
+            background-color: #fff;
+            border: 2px solid #a8dadc;
+            color: #333;
+        }
+
+        .input-field:focus {
+            border-color: #457b9d !important;
+            box-shadow: 0 0 8px rgba(69, 123, 157, 0.6) !important;
+            transform: scale(1.02);
+        }
+
+        .loading {
+            display: none;
+            font-size: 20px;
+            font-weight: bold;
+            color: #457b9d;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            display: inline-block;
+            border: 3px solid transparent;
+            border-top: 3px solid #457b9d;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeInResult 1s forwards, scaleUp 0.5s forwards;
+        }
+
+        @keyframes fadeInResult {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleUp {
+            0% {
+                transform: scale(0.8);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .fit {
+            color: #2a9d8f;
+            font-size: 26px;
+        }
+
+        .not-fit {
+            color: #e63946;
+            font-size: 26px;
+        }
+
+        input {
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .btn-custom:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(69, 123, 157, 0.6);
+        }
+
+        /* Additional styling for icons */
+        .icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            color: #457b9d;
+            animation: fadeInIcon 1s ease-in-out;
+        }
+
+        @keyframes fadeInIcon {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .icon-small {
+            font-size: 20px;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Fitness icons animation -->
+    <div class="fitness-icon icon-dumbbell">
+        <i class="fas fa-dumbbell"></i>
+    </div>
+
+    <div class="fitness-icon icon-running">
+        <i class="fas fa-running"></i>
+    </div>
+
+    <div class="fitness-icon icon-heartbeat">
+        <i class="fas fa-heartbeat"></i>
+    </div>
+
+    <div class="fitness-icon icon-dumbbell-two">
+        <i class="fas fa-dumbbell"></i>
+    </div>
+
+    <div class="container">
+        <!-- Fitness related logo (Dumbbell Icon) -->
+        <div class="icon">
+            <i class="fas fa-dumbbell"></i>
+        </div>
+
+        <h2>BMI Fitness Prediction</h2>
+
+        <!-- Input fields -->
+        <div class="input-group">
+            <input type="number" id="age" class="form-control input-field" placeholder="Enter Age" required>
+        </div>
+        <div class="input-group">
+            <input type="number" id="height" class="form-control input-field" step="0.01" placeholder="Enter Height (meters)" required>
+        </div>
+        <div class="input-group">
+            <input type="number" id="weight" class="form-control input-field" step="0.1" placeholder="Enter Weight (kg)" required>
+        </div>
+
+        <!-- Predict button with fitness-related icon -->
+        <button class="btn btn-custom w-100" onclick="predictFitness()">Predict <i class="fas fa-running icon-small"></i></button>
+
+        <!-- Loading spinner -->
+        <div class="loading mt-3" id="loading">
+            <div class="spinner"></div> Calculating...
+        </div>
+
+        <!-- Result section with heartbeat icon -->
+        <p class="result mt-3" id="result">
+            <i class="fas fa-heartbeat icon-small"></i>
+        </p>
+    </div>
+
+    <!-- Animated Wave at the Bottom -->
+    <div class="wave"></div>
+
+    <script>
+        function predictFitness() {
+            const age = document.getElementById('age').value;
+            const height = document.getElementById('height').value;
+            const weight = document.getElementById('weight').value;
+            const resultElement = document.getElementById('result');
+            const loadingElement = document.getElementById('loading');
+
+            // Input validation
+            if (!age || !height || !weight || age <= 0 || height <= 0 || weight <= 0) {
+                resultElement.textContent = "Please enter valid inputs!";
+                resultElement.className = 'result not-fit';
+                return;
+            }
+
+            // Show loading effect
+            loadingElement.style.display = "block";
+            resultElement.textContent = "";
+
+            // Simulate a delay for demonstration
+            setTimeout(() => {
+                // Simulate BMI calculation and result
+                const bmi = weight / (height * height);
+                let fitnessStatus = '';
+
+                if (bmi < 18.5) {
+                    fitnessStatus = 'Underweight';
+                } else if (bmi >= 18.5 && bmi <= 24.9) {
+                    fitnessStatus = 'Fit';
+                } else {
+                    fitnessStatus = 'Overweight';
+                }
+
+                loadingElement.style.display = "none";
+                resultElement.textContent = fitnessStatus;
+                resultElement.className = 'result ' + (fitnessStatus === 'Fit' ? 'fit' : 'not-fit');
+            }, 1500);
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
